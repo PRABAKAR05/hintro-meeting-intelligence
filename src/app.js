@@ -91,7 +91,12 @@ const swaggerSpec = swaggerJsdoc({
   apis: ['./src/routes/*.js'],
 });
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+// Redirect /api-docs to /api-docs/ to prevent Swagger UI from falling through to 404
+app.get('/api-docs', (req, res) => {
+  res.redirect('/api-docs/');
+});
+
+app.use('/api-docs/', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'Hintro Meeting Intelligence API Docs',
 }));
