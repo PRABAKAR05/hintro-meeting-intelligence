@@ -102,6 +102,12 @@ app.get('/api-docs.json', (req, res) => {
   res.send(swaggerSpec);
 });
 
+// ─── Root Redirect ──────────────────────────────────────────────────────────
+app.get('/', (req, res) => {
+  res.redirect('/api-docs');
+});
+
+
 // ─── Health Check ───────────────────────────────────────────────────────────
 /**
  * @swagger
