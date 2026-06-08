@@ -19,7 +19,9 @@ const evaluationRoutes = require('./routes/evaluation.routes');
 const app = express();
 
 // ─── Security & Parsing ────────────────────────────────────────────────────
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false,
+}));
 app.use(cors({ origin: '*' }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
@@ -91,12 +93,13 @@ const swaggerSpec = swaggerJsdoc({
   apis: ['./src/routes/*.js'],
 });
 
-// Redirect /api-docs to /api-docs/ to prevent Swagger UI from falling through to 404
-app.get('/api-docs', (req, res) => {
-  res.redirect('/api-docs/');
-});
-
-app.use('/api-docs/', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+app.use('/api-docs', swaggerUi.serve);
+app.get('/api-docs', (req, res, next) => {
+  if (!req.originalUrl.endsWith('/')) {
+    return res.redirect(`${req.originalUrl}/`);
+  }
+  next();
+}, swaggerUi.setup(swaggerSpec, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'Hintro Meeting Intelligence API Docs',
 }));
